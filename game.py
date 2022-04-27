@@ -1,4 +1,3 @@
-from curses import COLOR_PAIRS
 import pygame
 
 
