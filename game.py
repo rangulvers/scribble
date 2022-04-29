@@ -1,5 +1,5 @@
 import pygame
-
+from particle import Particle
 
 DRAW_COLORS = {
     "Black": [0, 0, 0],
@@ -12,6 +12,8 @@ DRAW_COLORS = {
     "Magenta": [255, 0, 255],
     "Purple": [128, 0, 128]
 }
+
+particles = []
 
 
 def main():
@@ -29,18 +31,18 @@ def main():
 
     # Setup Game
     draw_line = True
-    play = True
-    screen.fill(DRAW_COLORS["White"])
+    play_game = True
+    firework_play_time = 2500
 
+    white_canvas(screen)
+    clock = pygame.time.Clock()
     # Main Loop
-    while play:
-        drawColorPicker(screen, set_color, line_size)
-        drawCurrentColor(screen, set_color)
-
+    while play_game:
+        clock.tick(40)
         mouse_position = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                play = False
+                play_game = False
                 pygame.quit()
             elif event.type == pygame.MOUSEMOTION:
                 if allow_drawing:
@@ -61,7 +63,11 @@ def main():
                 else:
                     pygame.draw.circle(screen, set_color, mouse_position, 20)
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
+                if event.key == pygame.K_ESCAPE:
+                    play_game = False
+                    pygame.quit()
+                    break
+                elif event.key == pygame.K_c:
                     clear_screen(screen)
                 elif event.key == pygame.K_UP:
                     line_size = line_size+1
@@ -70,16 +76,28 @@ def main():
                         line_size = line_size-1
                 elif event.key == pygame.K_m:
                     draw_line = not draw_line
-                elif event.key == pygame.K_ESCAPE:
-                    play = False
-                    pygame.quit()
-                    break
+
                 elif event.key == pygame.K_SPACE:
                     pygame.display.toggle_fullscreen()  # Toggle fullscreen
                 elif event.key == pygame.K_a:
                     animate_circle(screen, set_color,
                                    mouse_position[0], mouse_position[1], 0)
-        pygame.display.update()
+                elif event.key == pygame.K_p:           # play particle effect
+                    create_particles(mouse_position)
+
+        if len(particles) > 0:
+            white_canvas(screen)
+            for p in particles:
+                p.draw()
+                p.move()
+                if p.live() >= firework_play_time:
+                    particles.pop(particles.index(p))
+                    del p
+
+        drawColorPicker(screen, set_color, line_size)
+        drawCurrentColor(screen, set_color)
+        pygame.display.flip()
+        print(len(particles))
     pygame.quit()
 
 
@@ -90,6 +108,10 @@ def clear_screen(screen):
         pygame.draw.circle(screen, DRAW_COLORS["White"], (x/2, y/2), radius)
         radius += 5
         pygame.display.update()
+    screen.fill(DRAW_COLORS["White"])
+
+
+def white_canvas(screen):
     screen.fill(DRAW_COLORS["White"])
 
 
@@ -114,6 +136,11 @@ def drawColorPicker(screen, set_color, line_size):
 
 def drawCurrentColor(screen, set_color):
     pygame.draw.rect(screen, set_color, [0, 0, 50, 50])
+
+
+def create_particles(pos):
+    for part in range(100):
+        particles.append(Particle(pos[0], pos[1], DRAW_COLORS))
 
 
 if __name__ == "__main__":
