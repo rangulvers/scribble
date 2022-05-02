@@ -139,7 +139,8 @@ def drawCurrentColor(screen, set_color):
 
 def create_particles(pos):
     for part in range(100):
-        particles.append(Particle(pos[0], pos[1], DRAW_COLORS, False, [1, 3]))
+        particles.append(
+            Particle(pos[0], pos[1], DRAW_COLORS, False, [1, 3], speed=2))
 
 
 if __name__ == "__main__":
