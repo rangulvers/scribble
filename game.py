@@ -32,7 +32,7 @@ def main():
     # Setup Game
     draw_line = True
     play_game = True
-    firework_play_time = 2500
+    particle_life_time = 2500
 
     white_canvas(screen)
     clock = pygame.time.Clock()
@@ -90,14 +90,13 @@ def main():
             for p in particles:
                 p.draw()
                 p.move()
-                if p.live() >= firework_play_time:
+                if p.life() >= particle_life_time:
                     particles.pop(particles.index(p))
                     del p
 
         drawColorPicker(screen, set_color, line_size)
         drawCurrentColor(screen, set_color)
         pygame.display.flip()
-        print(len(particles))
     pygame.quit()
 
 
@@ -140,7 +139,7 @@ def drawCurrentColor(screen, set_color):
 
 def create_particles(pos):
     for part in range(100):
-        particles.append(Particle(pos[0], pos[1], DRAW_COLORS))
+        particles.append(Particle(pos[0], pos[1], DRAW_COLORS, False, [1, 3]))
 
 
 if __name__ == "__main__":
