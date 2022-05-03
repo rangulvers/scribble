@@ -64,7 +64,7 @@ class Controller:
         pygame.draw.rect(screen, set_color, [0, 0, 50, 50])
 
     def create_particles(self, pos):
-        for part in range(2):
+        for part in range(100):
             particles.add(
                 Particle(pos[0], pos[1], settings.DRAW_COLORS, False, [1, 3], speed=5))
 

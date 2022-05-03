@@ -4,7 +4,7 @@ import random
 
 
 class Particle:
-    def __init__(self, startx, starty, col, falling=True, size=[1, 4], spread=[-10, 10], speed=10, lifespan=2500):
+    def __init__(self, startx, starty, col, falling=True, size=[1, 4], spread=[-5, 5], speed=20, lifespan=2500):
         self.x = startx
         self.y = starty
         self.falling = falling
@@ -54,9 +54,7 @@ class Particle:
         return random.randint(1, self.speed)
 
     def check_live_time(self):
-        if (pygame.time.get_ticks() - self.birth_time) > self.lifespan:
-            self.is_alive = False
-        if self.is_alive is False:
+        if (pygame.time.get_ticks() - self.birth_time) > self.lifespan or self.is_alive == False:
             particles.rem(self)
             del self
 
