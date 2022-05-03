@@ -1,146 +1,64 @@
+
 import pygame
-from particle import Particle
-
-DRAW_COLORS = {
-    "Black": [0, 0, 0],
-    "White": [255, 255, 255],
-    "Red": [255, 0, 0],
-    "Lime": [0, 255, 0],
-    "Blue": [0, 0, 255],
-    "Yellow": [255, 255, 0],
-    "Cyan": [0, 255, 255],
-    "Magenta": [255, 0, 255],
-    "Purple": [128, 0, 128]
-}
-
-particles = []
+from controll import controller
+from controll import settings
 
 
 def main():
     pygame.init()
-    size = width, height = 800, 600
-    screen = pygame.display.set_mode(
-        size, pygame.RESIZABLE)
-
-    # Set Game View and options
-    set_color = DRAW_COLORS["Black"]
-    line_size = 4
-    mouse_position = (0, 0)
-    allow_drawing = False
-    last_pos = None
-
-    # Setup Game
-    draw_line = True
-    play_game = True
-    particle_life_time = 2500
-
-    white_canvas(screen)
+    controller.white_canvas(settings.screen)
     clock = pygame.time.Clock()
     # Main Loop
-    while play_game:
+    while settings.play_game:
         clock.tick(40)
-        mouse_position = pygame.mouse.get_pos()
+        controller.mous_pos = pygame.mouse.get_pos()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                play_game = False
+                settings.play_game = False
                 pygame.quit()
             elif event.type == pygame.MOUSEMOTION:
-                if allow_drawing:
-                    if last_pos is not None:
-                        pygame.draw.line(screen, set_color, last_pos,
-                                         mouse_position, line_size)
-                    last_pos = mouse_position
+                if settings.allow_drawing:
+                    if settings.last_pos is not None:
+                        pygame.draw.line(settings.screen, settings.set_color, settings.last_pos,
+                                         controller.mous_pos, settings.line_size)
+                    settings.last_pos = controller.mous_pos
             elif event.type == pygame.MOUSEBUTTONUP:
-                last_pos = None
-                allow_drawing = False
+                settings.last_pos = None
+                settings.allow_drawing = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if mouse_position[0] <= 50 and mouse_position[1] > 50:
-                    pick_color = pygame.Surface.get_at(screen, mouse_position)
-                    set_color = pick_color
+                if controller.mous_pos[0] <= 50 and controller.mous_pos[1] > 50:
+                    pick_color = pygame.Surface.get_at(
+                        settings.screen, controller.mous_pos)
+                    settings.set_color = pick_color
                     pygame.mouse.get_pressed()
-                if draw_line:
-                    allow_drawing = True
+                if settings.draw_line:
+                    settings.allow_drawing = True
                 else:
-                    pygame.draw.circle(screen, set_color, mouse_position, 20)
+                    pygame.draw.circle(
+                        settings.screen, settings.set_color, controller.mous_pos, 20)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    play_game = False
+                    settings.play_game = False
                     pygame.quit()
                     break
-                elif event.key == pygame.K_c:
-                    clear_screen(screen)
-                elif event.key == pygame.K_UP:
-                    line_size = line_size+1
-                elif event.key == pygame.K_DOWN:
-                    if line_size > 1:
-                        line_size = line_size-1
-                elif event.key == pygame.K_m:
-                    draw_line = not draw_line
+                else:
+                    controller.keybboard(event.key)
 
-                elif event.key == pygame.K_SPACE:
-                    pygame.display.toggle_fullscreen()  # Toggle fullscreen
-                elif event.key == pygame.K_a:
-                    animate_circle(screen, set_color,
-                                   mouse_position[0], mouse_position[1], 0)
-                elif event.key == pygame.K_p:           # play particle effect
-                    create_particles(mouse_position)
-
-        if len(particles) > 0:
-            white_canvas(screen)
-            for p in particles:
+        if len(controller.particles) > 0:
+            controller.white_canvas(settings.screen)
+            for p in controller.particles:
                 p.draw()
                 p.move()
-                if p.life() >= particle_life_time:
-                    particles.pop(particles.index(p))
+                if p.life() >= settings.particle_life_time:
+                    controller.particles.pop(controller.particles.index(p))
                     del p
 
-        drawColorPicker(screen, set_color, line_size)
-        drawCurrentColor(screen, set_color)
+        controller.drawColorPicker(
+            settings.screen, settings.set_color, settings.line_size)
+        controller.drawCurrentColor(settings.screen, settings.set_color)
         pygame.display.flip()
     pygame.quit()
-
-
-def clear_screen(screen):
-    radius = 0.1
-    x, y = pygame.display.get_window_size()
-    while radius <= x/2:
-        pygame.draw.circle(screen, DRAW_COLORS["White"], (x/2, y/2), radius)
-        radius += 5
-        pygame.display.update()
-    screen.fill(DRAW_COLORS["White"])
-
-
-def white_canvas(screen):
-    screen.fill(DRAW_COLORS["White"])
-
-
-def animate_circle(screen, color, x, y, radius):
-    pygame.draw.circle(screen, color, (x, y), radius)
-    pygame.display.update()
-    pygame.time.delay(10)
-    radius += 1
-    if radius <= x/2:
-        animate_circle(screen, color, x, y, radius)
-
-
-def drawColorPicker(screen, set_color, line_size):
-    cX = 0
-    cY = 0
-    for col in DRAW_COLORS:
-        cY += 50
-        pygame.draw.rect(screen, col, [cX, cY, 50, 50])
-    pygame.draw.rect(screen, DRAW_COLORS["White"], [cX, cY+50, 50, 50])
-    pygame.draw.circle(screen, set_color, (cX+25, cY+75), line_size)
-
-
-def drawCurrentColor(screen, set_color):
-    pygame.draw.rect(screen, set_color, [0, 0, 50, 50])
-
-
-def create_particles(pos):
-    for part in range(100):
-        particles.append(
-            Particle(pos[0], pos[1], DRAW_COLORS, False, [1, 3], speed=2))
 
 
 if __name__ == "__main__":

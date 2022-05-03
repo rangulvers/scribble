@@ -3,6 +3,7 @@ import random
 
 
 class Particle:
+
     def __init__(self, startx, starty, col, falling=True, size=[1, 4], spread=[-10, 10], speed=10):
         self.x = startx
         self.y = starty
@@ -17,6 +18,7 @@ class Particle:
         pass
 
     def move(self):
+
         if self.falling:
             if self.y > pygame.display.get_window_size()[1]:
                 self.livetime = 0
