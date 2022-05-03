@@ -1,13 +1,12 @@
 
 import pygame
 from particle import Particle
+from particle import particles
 
 
 class Controller:
     def __init__(self):
         self.mous_pos = (0, 0)
-        self.particles = []
-        pass
 
     def keybboard(self, key):
         if key == pygame.K_c:
@@ -65,9 +64,9 @@ class Controller:
         pygame.draw.rect(screen, set_color, [0, 0, 50, 50])
 
     def create_particles(self, pos):
-        for part in range(100):
-            self.particles.append(
-                Particle(pos[0], pos[1], settings.DRAW_COLORS, False, [1, 3], speed=2))
+        for part in range(2):
+            particles.add(
+                Particle(pos[0], pos[1], settings.DRAW_COLORS, False, [1, 3], speed=5))
 
 
 class Settings:
